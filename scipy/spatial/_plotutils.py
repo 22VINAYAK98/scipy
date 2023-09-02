@@ -210,7 +210,7 @@ def voronoi_plot_2d(vor, ax=None, **kw):
     customized:
 
     >>> fig = voronoi_plot_2d(vor, show_vertices=False, line_colors='orange',
-    ...                       line_width=2, line_alpha=0.6, point_size=2)
+    ...                       line_width=2, line_alpha=0.6, point_size=2, plot_finite_only=True)
     >>> plt.show()
 
     """
@@ -228,6 +228,8 @@ def voronoi_plot_2d(vor, ax=None, **kw):
     line_colors = kw.get('line_colors', 'k')
     line_width = kw.get('line_width', 1.0)
     line_alpha = kw.get('line_alpha', 1.0)
+    plot_finite_only = kw.get('plot_finite_only', False)
+    plot_infinite_only = kw.get('plot_infinite_only', False)
 
     center = vor.points.mean(axis=0)
     ptp_bound = np.ptp(vor.points, axis=0)
@@ -253,16 +255,29 @@ def voronoi_plot_2d(vor, ax=None, **kw):
 
             infinite_segments.append([vor.vertices[i], far_point])
 
-    ax.add_collection(LineCollection(finite_segments,
+    if (plot_finite_only):
+        ax.add_collection(LineCollection(finite_segments,
                                      colors=line_colors,
                                      lw=line_width,
                                      alpha=line_alpha,
                                      linestyle='solid'))
-    ax.add_collection(LineCollection(infinite_segments,
+    elif (plot_infinite_only):
+        ax.add_collection(LineCollection(infinite_segments,
                                      colors=line_colors,
                                      lw=line_width,
                                      alpha=line_alpha,
                                      linestyle='dashed'))
+    else:
+        ax.add_collection(LineCollection(finite_segments,
+                                        colors=line_colors,
+                                        lw=line_width,
+                                        alpha=line_alpha,
+                                        linestyle='solid'))
+        ax.add_collection(LineCollection(infinite_segments,
+                                        colors=line_colors,
+                                        lw=line_width,
+                                        alpha=line_alpha,
+                                        linestyle='dashed'))
 
     _adjust_bounds(ax, vor.points)
 
